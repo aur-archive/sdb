@@ -1,0 +1,34 @@
+# Maintainer: Dimitri 'skp' Sabadie <dimitri.sabadie@gmail.com>
+pkgname=sdb
+pkgver=0.9.5
+pkgrel=6
+pkgdesc="The Simple D Builder"
+arch=('any')
+url="http://github.com/skypers/sdb"
+license=('GPL')
+makedepends=('git' 'dmd')
+source=('https://github.com/skypers/sdb/tarball/v'$pkgver)
+md5sums=('60a7199a222073f09388e7c08bd6085d')
+
+build() {
+    msg "Decompressing sources..."
+    tar -xzf v$pkgver
+
+    msg "Building sources..."
+    cd `tar -tf v$pkgver | head -n 1`/src
+    rdmd --build-only -release -O -J../conf/linux -of../../sdb sdb
+
+    msg "Getting the compilers configuration files..."
+    cd ..
+    cp -r conf/compilers ..
+    
+}
+
+package() {
+    # copying the sdb binary
+    mkdir -p $pkgdir/usr/local/bin
+    cp sdb $pkgdir/usr/local/bin
+    # copying the compilers configuration files
+    mkdir -p $pkgdir/etc/sdb
+    cp compilers/* $pkgdir/etc/sdb
+}
